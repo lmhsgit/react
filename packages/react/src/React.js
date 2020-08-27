@@ -60,6 +60,7 @@ import {createFundamental} from './ReactFundamental';
 import {createEventResponder} from './ReactEventResponder';
 import {createScope} from './ReactScope';
 
+window.n = 1
 // TODO: Move this branching into the other module instead and just re-export.
 const createElement = __DEV__ ? createElementWithValidation : createElementProd;
 const cloneElement = __DEV__ ? cloneElementWithValidation : cloneElementProd;

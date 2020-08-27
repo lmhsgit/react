@@ -123,32 +123,32 @@ function FiberNode(
   this.stateNode = null;
 
   // Fiber
-  this.return = null;
-  this.child = null;
-  this.sibling = null;
+  this.return = null; // 父级Fiber 用来指向当前fiber的父fiber
+  this.child = null; // 子级Fiber 指向自己的第一个子Fiber节点 也就是firstChildFiber
+  this.sibling = null; // 兄弟节点 指向右边的兄弟节点
   this.index = 0;
 
   this.ref = null;
 
-  this.pendingProps = pendingProps;
-  this.memoizedProps = null;
-  this.updateQueue = null;
-  this.memoizedState = null;
+  this.pendingProps = pendingProps; // 新传进来的props
+  this.memoizedProps = null; // 上次渲染完后的旧的props
+  this.updateQueue = null; // 该fiber上的更新队列 执行一次setState就会往这个属性上挂一个新的更新 这些更新以链表的形式存在
+  this.memoizedState = null; // 旧的state 也表示当前页面上的你能看到的状态 不只是class组件有 function类型组件也可能有
   this.dependencies = null;
 
-  this.mode = mode;
+  this.mode = mode; // 当前组件的所有子组件要处于什么状态。（参见ReactTypeOfMode.js）比如concurrentMode就表示当前子节点们要异步进行更新
 
   // Effects
-  this.effectTag = NoEffect;
-  this.nextEffect = null;
+  this.effectTag = NoEffect; // 当前fiber要进行何种更新。ReactSideEffectTags.js。比如placement表示是新创建的节点 update表示属性可能有变化或者有生命周期之类的
+  this.nextEffect = null; // 一条链表 指向下一个有更新的fiber
 
-  this.firstEffect = null;
-  this.lastEffect = null;
+  this.firstEffect = null; // 子节点中所有有更新的节点中的第一个fiber
+  this.lastEffect = null; // 子节点中所有有更新的节点中的最后一个fiber
 
   this.expirationTime = NoWork;
   this.childExpirationTime = NoWork;
 
-  this.alternate = null;
+  this.alternate = null; // 指向当前fiber的上一个fiber
 
   if (enableProfilerTimer) {
     // Note: The following is done to avoid a v8 performance cliff.

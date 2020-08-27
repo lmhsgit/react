@@ -235,6 +235,7 @@ export function updateContainer(
   parentComponent: ?React$Component<any, any>,
   callback: ?Function,
 ): ExpirationTime {
+  console.log(`${window.n++}-[ReactFiberReconciler.new.js] updateContainer()--->`, 'element:', element, 'container:', container, 'parentComponent:', parentComponent, 'callback:', callback);
   if (__DEV__) {
     onScheduleRoot(container, element);
   }

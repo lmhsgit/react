@@ -293,6 +293,7 @@ export function appendInitialChild(
   parentInstance: Instance,
   child: Instance | TextInstance,
 ): void {
+  console.log(`${window.n++}-[ReactDOMHostConfig.js] appendInitialChild()--->`, 'arguments:', arguments);
   parentInstance.appendChild(child);
 }
 

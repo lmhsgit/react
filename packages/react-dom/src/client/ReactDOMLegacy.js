@@ -187,6 +187,7 @@ function legacyRenderSubtreeIntoContainer(
   // TODO: Without `any` type, Flow says "Property cannot be accessed on any
   // member of intersection type." Whyyyyyy.
   let root: RootType = (container._reactRootContainer: any);
+  console.log(`${window.n++}-[ReactDOMLegacy.js] legacyRenderSubtreeIntoContainer()--->`, 'container._reactRootContainer:', root);
   let fiberRoot;
   if (!root) {
     // Initial mount
@@ -194,7 +195,9 @@ function legacyRenderSubtreeIntoContainer(
       container,
       forceHydrate,
     );
+    // fiberRoot基于render方法的挂载DOM节点container(ReactDOM.render的第二个参数) 生成
     fiberRoot = root._internalRoot;
+    console.log('[ReactDOMLegacy.js] fiberRoot:', fiberRoot)
     if (typeof callback === 'function') {
       const originalCallback = callback;
       callback = function() {
@@ -289,6 +292,7 @@ export function render(
   container: Container,
   callback: ?Function,
 ) {
+  console.log(`${window.n++}-[ReactDOMLegacy.js] render()--->`, 'element:', element, 'container:', container, 'callback:', callback)
   invariant(
     isValidContainer(container),
     'Target container is not a DOM element.',

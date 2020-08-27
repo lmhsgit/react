@@ -235,6 +235,8 @@ export function updateContainer(
   parentComponent: ?React$Component<any, any>,
   callback: ?Function,
 ): ExpirationTime {
+  // element为react元素，container为FiberRootNode(首次为fiberRoot)
+  console.log(`${window.n++}-[ReactFiberReconciler.old.js] updateContainer()--->`, 'element:', element, 'container:', container, 'parentComponent:', parentComponent, 'callback:', callback);
   if (__DEV__) {
     onScheduleRoot(container, element);
   }

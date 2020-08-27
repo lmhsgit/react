@@ -26,7 +26,6 @@ const codeFrame = require('babel-code-frame');
 const Wrappers = require('./wrappers');
 
 const RELEASE_CHANNEL = process.env.RELEASE_CHANNEL;
-
 // Default to building in experimental mode. If the release channel is set via
 // an environment variable, then check if it's "experimental".
 const __EXPERIMENTAL__ =

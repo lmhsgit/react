@@ -417,6 +417,7 @@ export function createElement(
   rootContainerElement: Element | Document,
   parentNamespace: string,
 ): Element {
+  console.log(`${window.n++}-[ReactDOMComponent.js] createElement()--->`, 'arguments:', arguments);
   let isCustomComponentTag;
 
   // We create tags in the namespace of their parent container, except HTML
