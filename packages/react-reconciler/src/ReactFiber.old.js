@@ -116,22 +116,25 @@ function FiberNode(
   mode: TypeOfMode,
 ) {
   // Instance
-  this.tag = tag;
-  this.key = key;
-  this.elementType = null;
+  // 用于标记fiber节点的类型，初次渲染为3-HostRoot
+  this.tag = tag; // (详见ReactWorkTags.js)0-FunctionComponent；5-HostComponent(函数组件？)；6-HostText文本
+  this.key = key; // 用于唯一标识一个fiber节点
+  this.elementType = null; // 如"div", "span", "h2", 函数组件props => {}
   this.type = null;
-  this.stateNode = null;
+  // 对于rootFiber节点而言，stateNode属性指向对应的fiberRoot节点
+  // 对于child fiber节点而言，stateNode属性指向对应的组件实例
+  this.stateNode = null; // 对应的真实DOM节点?
 
   // Fiber
   this.return = null; // 父级Fiber 用来指向当前fiber的父fiber
   this.child = null; // 子级Fiber 指向自己的第一个子Fiber节点 也就是firstChildFiber
   this.sibling = null; // 兄弟节点 指向右边的兄弟节点
-  this.index = 0;
+  this.index = 0; // 当前fiber节点的索引
 
   this.ref = null;
 
-  this.pendingProps = pendingProps; // 新传进来的props
-  this.memoizedProps = null; // 上次渲染完后的旧的props
+  this.pendingProps = pendingProps; // 表示待处理的props数据
+  this.memoizedProps = null; // 表示之前已经存储的props数据
   this.updateQueue = null; // 该fiber上的更新队列 执行一次setState就会往这个属性上挂一个新的更新 这些更新以链表的形式存在
   this.memoizedState = null; // 旧的state 也表示当前页面上的你能看到的状态 不只是class组件有 function类型组件也可能有
   this.dependencies = null;
@@ -145,9 +148,14 @@ function FiberNode(
   this.firstEffect = null; // 子节点中所有有更新的节点中的第一个fiber
   this.lastEffect = null; // 子节点中所有有更新的节点中的最后一个fiber
 
-  this.expirationTime = NoWork;
+  this.expirationTime = NoWork; // 表示当前更新任务的过期时间，即在该时间之后更新任务将会被完成
+  // 表示当前fiber节点的子fiber节点中具有最高优先级的任务的过期时间
+  // 该属性的值会根据子fiber节点中的任务优先级进行动态调整
   this.childExpirationTime = NoWork;
 
+  // 用于指向另一个fiber节点
+  // 这两个fiber节点使用alternate属性相互引用，形成双缓冲
+  // alternate属性指向的fiber节点在任务调度中又称为workInProgress节点
   this.alternate = null; // 指向当前fiber的上一个fiber
 
   if (enableProfilerTimer) {

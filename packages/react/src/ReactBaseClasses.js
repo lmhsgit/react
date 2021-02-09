@@ -120,6 +120,7 @@ if (__DEV__) {
   }
 }
 
+// 通过借用构造函数，实现典型的寄生组合式继承，避免原型污染
 function ComponentDummy() {}
 ComponentDummy.prototype = Component.prototype;
 
@@ -134,10 +135,14 @@ function PureComponent(props, context, updater) {
   this.updater = updater || ReactNoopUpdateQueue;
 }
 
+// 将PureComponent的原型指向借用构造函数的实例
 const pureComponentPrototype = (PureComponent.prototype = new ComponentDummy());
+// 重新设置构造函数的指向
 pureComponentPrototype.constructor = PureComponent;
 // Avoid an extra prototype jump for these methods.
+// 将Component.prototype和PureComponent.prototype进行合并，减少原型链查找所浪费的时间(原型链越长所耗费的时间越久)
 Object.assign(pureComponentPrototype, Component.prototype);
+// 这里是与Component的区别之处，PureComponent的原型上拥有一个isPureReactComponent属性
 pureComponentPrototype.isPureReactComponent = true;
 
 export {Component, PureComponent};

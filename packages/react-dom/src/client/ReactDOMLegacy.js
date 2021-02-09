@@ -106,6 +106,7 @@ function shouldHydrateDueToLegacyHeuristic(container) {
   return !!(
     rootElement &&
     rootElement.nodeType === ELEMENT_NODE &&
+    // ROOT_ATTRIBUTE_NAME属性来区分是客户端渲染还是服务端渲染，服务端渲染时根节点有data-reactroot属性
     rootElement.hasAttribute(ROOT_ATTRIBUTE_NAME)
   );
 }

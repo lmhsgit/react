@@ -269,6 +269,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       // Noop.
       return;
     }
+    console.log(`${window.n++}-[ReactChildFiber.old.js] reconcileChildrenArray()--->`, '删除！ effectTag=Deletion', 'childToDelete:', childToDelete);
     // Deletions are added in reversed order so we add it to the front.
     // At this point, the return fiber's effect list is empty except for
     // deletions, so we can just append the deletion to the list. The remaining
@@ -349,6 +350,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       const oldIndex = current.index;
       if (oldIndex < lastPlacedIndex) {
         // This is a move.
+        console.log(`${window.n++}-[ReactChildFiber.old.js] placeChild()--->`, '移动! effectTag=Placement');
         newFiber.effectTag = Placement;
         return lastPlacedIndex;
       } else {
@@ -357,6 +359,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       }
     } else {
       // This is an insertion.
+      console.log(`${window.n++}-[ReactChildFiber.old.js] placeChild()--->`, '插入! effectTag=Placement');
       newFiber.effectTag = Placement;
       return lastPlacedIndex;
     }
@@ -850,6 +853,7 @@ function ChildReconciler(shouldTrackSideEffects) {
           deleteChild(returnFiber, oldFiber);
         }
       }
+      // 如果有新增子节点，为其打上effectTag为2-Placement
       lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
       if (previousNewFiber === null) {
         // TODO: Move out of the loop. This only happens for the first run.
@@ -874,6 +878,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (oldFiber === null) {
       // If we don't have any more existing children we can choose a fast path
       // since the rest will all be insertions.
+      // 遍历所有child，为每个子节点赋值其sibling
       for (; newIdx < newChildren.length; newIdx++) {
         const newFiber = createChild(
           returnFiber,
@@ -1364,6 +1369,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     if (isArray(newChild)) {
+      // 为数组，说明有多个子节点，遍历之。并为每个子节点赋值其sibling
       return reconcileChildrenArray(
         returnFiber,
         currentFirstChild,

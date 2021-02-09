@@ -1441,6 +1441,7 @@ function renderRootSync(root, expirationTime) {
   // If the root or expiration time have changed, throw out the existing stack
   // and prepare a fresh one. Otherwise we'll continue where we left off.
   if (root !== workInProgressRoot || expirationTime !== renderExpirationTime) {
+    // 这里面根据FiberRoot赋值给workInProgress初始值
     prepareFreshStack(root, expirationTime);
     startWorkOnPendingInteractions(root, expirationTime);
   }
@@ -1568,6 +1569,7 @@ function workLoopConcurrent() {
 }
 
 function performUnitOfWork(unitOfWork: Fiber): void {
+  console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] performUnitOfWork()--->`, 'unitOfWork:', unitOfWork);
   // The current, flushed, state of this fiber is the alternate. Ideally
   // nothing should rely on this, but relying on it here means that we don't
   // need an additional field on the work in progress.
@@ -1596,6 +1598,7 @@ function performUnitOfWork(unitOfWork: Fiber): void {
 }
 
 function completeUnitOfWork(unitOfWork: Fiber): void {
+  console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] completeUnitOfWork()--->`, 'unitOfWork:', unitOfWork);
   // Attempt to complete the current unit of work, then move to the next
   // sibling. If there are no more siblings, return to the parent fiber.
   let completedWork = unitOfWork;
@@ -1606,6 +1609,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
     const current = completedWork.alternate;
     const returnFiber = completedWork.return;
 
+    //1.创建本fiber的真实dom节点
     // Check if the work completed or if something threw.
     if ((completedWork.effectTag & Incomplete) === NoEffect) {
       setCurrentDebugFiberInDEV(completedWork);
@@ -1630,6 +1634,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         return;
       }
 
+      // 2.计算effect-list
       if (
         returnFiber !== null &&
         // Do not append effects to parents if a sibling failed to complete
@@ -1659,7 +1664,9 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
         // Skip both NoWork and PerformedWork tags when creating the effect
         // list. PerformedWork effect is read by React DevTools but shouldn't be
         // committed.
+        // unitOfWork当前节点有更新，标记父fiber的firstEffect和lastEffect
         if (effectTag > PerformedWork) {
+          console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] completeUnitOfWork()--->节点有变动，加入effect-list`, 'effectTag:', effectTag);
           if (returnFiber.lastEffect !== null) {
             returnFiber.lastEffect.nextEffect = completedWork;
           } else {
@@ -1710,6 +1717,7 @@ function completeUnitOfWork(unitOfWork: Fiber): void {
       }
     }
 
+    // 3.该fiber节点的事情干完了，WIP继续找该节点的sibling并中断内循环。没sibling则WIP=returnFiber，继续内循环
     const siblingFiber = completedWork.sibling;
     if (siblingFiber !== null) {
       // If there is more work to do in this returnFiber, do that next.
@@ -1924,6 +1932,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     // of the effect list for each phase: all mutation effects come before all
     // layout effects, and so on.
 
+    // commit的第一阶段：before mutation
     // The first phase a "before mutation" phase. We use this phase to read the
     // state of the host tree right before we mutate it. This is where
     // getSnapshotBeforeUpdate is called.
@@ -1960,6 +1969,7 @@ function commitRootImpl(root, renderPriorityLevel) {
       recordCommitTime();
     }
 
+    // commit的第二阶段：mutation phase
     // The next phase is the mutation phase, where we mutate the host tree.
     nextEffect = firstEffect;
     do {
@@ -1999,6 +2009,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     // work is current during componentDidMount/Update.
     root.current = finishedWork;
 
+    // commit的第三阶段：layout phase
     // The next phase is the layout phase, where we call effects that read
     // the host tree after it's been mutated. The idiomatic use case for this is
     // layout, but class component lifecycles also fire here for legacy reasons.
@@ -2216,6 +2227,7 @@ function commitMutationEffects(root: FiberRoot, renderPriorityLevel) {
       effectTag & (Placement | Update | Deletion | Hydrating);
     switch (primaryEffectTag) {
       case Placement: {
+        console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] commitMutationEffects()---> 提交Placement`, 'nextEffect:', nextEffect);
         commitPlacement(nextEffect);
         // Clear the "placement" from effect tag so that we know that this is
         // inserted, before any life-cycles like componentDidMount gets called.
@@ -2225,6 +2237,7 @@ function commitMutationEffects(root: FiberRoot, renderPriorityLevel) {
         break;
       }
       case PlacementAndUpdate: {
+        console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] commitMutationEffects()---> 提交PlacementAndUpdate`, 'nextEffect:', nextEffect);
         // Placement
         commitPlacement(nextEffect);
         // Clear the "placement" from effect tag so that we know that this is
@@ -2249,11 +2262,13 @@ function commitMutationEffects(root: FiberRoot, renderPriorityLevel) {
         break;
       }
       case Update: {
+        console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] commitMutationEffects()---> 提交Update`, 'nextEffect:', nextEffect);
         const current = nextEffect.alternate;
         commitWork(current, nextEffect);
         break;
       }
       case Deletion: {
+        console.log(`${window.n++}-[ReactFiberWorkLoop.old.js] commitMutationEffects()---> 提交Deletion`, 'nextEffect:', nextEffect);
         commitDeletion(root, nextEffect, renderPriorityLevel);
         break;
       }

@@ -1634,6 +1634,7 @@ function commitWork(current: Fiber | null, finishedWork: Fiber): void {
         const updatePayload: null | UpdatePayload = (finishedWork.updateQueue: any);
         finishedWork.updateQueue = null;
         if (updatePayload !== null) {
+          console.log(`${window.n++}-[ReactFiberCommitWork.old.js] commitWork()---> 准备执行真实DOM更新`, 'instance:', instance);
           commitUpdate(
             instance,
             updatePayload,

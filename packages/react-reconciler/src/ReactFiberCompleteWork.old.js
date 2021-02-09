@@ -229,6 +229,7 @@ if (supportsMutation) {
     // If the update payload indicates that there is a change or if there
     // is a new ref we mark this as an update. All the work is done in commitWork.
     if (updatePayload) {
+      // 为workInProgress打上effectTag
       markUpdate(workInProgress);
     }
   };
@@ -639,6 +640,7 @@ function completeWork(
   workInProgress: Fiber,
   renderExpirationTime: ExpirationTime,
 ): Fiber | null {
+  console.log(`${window.n++}-[ReactFiberCompleteWork.old.js] completeWork()--->`, 'current:', current, '| workInProgress:', workInProgress, '| renderExpirationTime:', renderExpirationTime);
   const newProps = workInProgress.pendingProps;
 
   switch (workInProgress.tag) {
@@ -687,6 +689,7 @@ function completeWork(
       const rootContainerInstance = getRootHostContainer();
       const type = workInProgress.type;
       if (current !== null && workInProgress.stateNode != null) {
+        // 非初次渲染，current树和workInProgress树的stateNode有值。则更新wip树的新props到host节点
         updateHostComponent(
           current,
           workInProgress,

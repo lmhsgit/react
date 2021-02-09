@@ -3021,6 +3021,7 @@ function beginWork(
   workInProgress: Fiber,
   renderExpirationTime: ExpirationTime,
 ): Fiber | null {
+  console.log(`${window.n++}-[ReactFiberBeginWork.old.js] beginWork()--->`, 'current:', current, 'workInProgress:', workInProgress);
   const updateExpirationTime = workInProgress.expirationTime;
 
   if (__DEV__) {
@@ -3041,6 +3042,7 @@ function beginWork(
     }
   }
 
+  // 非初次渲染,current不为空
   if (current !== null) {
     const oldProps = current.memoizedProps;
     const newProps = workInProgress.pendingProps;
@@ -3331,6 +3333,7 @@ function beginWork(
     case HostRoot:
       return updateHostRoot(current, workInProgress, renderExpirationTime);
     case HostComponent:
+      // updateHostComponent方法中，遍历workInProgress的所有子节点，赋值每个子节点的sibling，返回workInProgress.child=第一个子节点。
       return updateHostComponent(current, workInProgress, renderExpirationTime);
     case HostText:
       return updateHostText(current, workInProgress);

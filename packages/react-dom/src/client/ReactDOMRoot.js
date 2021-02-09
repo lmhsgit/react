@@ -121,7 +121,9 @@ function createRootImpl(
   const hydrate = options != null && options.hydrate === true;
   const hydrationCallbacks =
     (options != null && options.hydrationOptions) || null;
+  // createContainer创建一个fiberRoot（FiberRootNode的实例对象）, 其current指向rootFiber(一个FiberNode实例)
   const root = createContainer(container, tag, hydrate, hydrationCallbacks);
+  // 给container附加一个内部属性用于指向fiberRoot的current属性对应的rootFiber节点
   markContainerAsRoot(root.current, container);
   if (hydrate && tag !== LegacyRoot) {
     const doc =

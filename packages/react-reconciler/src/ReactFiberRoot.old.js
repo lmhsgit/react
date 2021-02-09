@@ -25,8 +25,8 @@ import {clearPendingUpdates as clearPendingMutableSourceUpdates} from './ReactMu
 
 function FiberRootNode(containerInfo, tag, hydrate) {
   this.tag = tag;
-  this.current = null;
-  this.containerInfo = containerInfo;
+  this.current = null; // 指向当前激活的与之对应的rootFiber节点
+  this.containerInfo = containerInfo; // 根DOM节点div#root
   this.pendingChildren = null;
   this.pingCache = null;
   this.finishedExpirationTime = NoWork;

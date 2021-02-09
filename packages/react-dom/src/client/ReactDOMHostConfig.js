@@ -258,6 +258,7 @@ export function createInstance(
   hostContext: HostContext,
   internalInstanceHandle: Object,
 ): Instance {
+  console.log(`${window.n++}-[ReactDomHostConfig.js] createInstance()--->`, 'type:', type, '| props:', props);
   let parentNamespace: string;
   if (__DEV__) {
     // TODO: take namespace into account when validating.
@@ -286,6 +287,7 @@ export function createInstance(
   );
   precacheFiberNode(internalInstanceHandle, domElement);
   updateFiberProps(domElement, props);
+  console.log(`${window.n++}-[ReactDomHostConfig.js] createInstance()--->return`, 'domElement:', domElement);
   return domElement;
 }
 
