@@ -391,6 +391,7 @@ function getStateFromUpdate<State>(
         // Null and undefined are treated as no-ops.
         return prevState;
       }
+      // 这里浅合并旧-新state
       // Merge the partial state and the previous state.
       return Object.assign({}, prevState, partialState);
     }

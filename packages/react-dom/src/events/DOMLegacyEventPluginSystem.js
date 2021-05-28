@@ -214,6 +214,7 @@ function runExtractedPluginEventsInBatch(
   nativeEventTarget: null | EventTarget,
   eventSystemFlags: EventSystemFlags,
 ) {
+  // 1. 构造合成事件
   const events = extractPluginEvents(
     topLevelType,
     targetInst,
@@ -221,6 +222,7 @@ function runExtractedPluginEventsInBatch(
     nativeEventTarget,
     eventSystemFlags,
   );
+  // 2. 执行事件监听函数
   runEventsInBatch(events);
 }
 
@@ -332,6 +334,8 @@ export function legacyListenToTopLevelEvent(
   mountAt: Document | Element,
   listenerMap: ElementListenerMap,
 ): void {
+  // 如果listenerMap中已有这个事件名, 跳过注册
+  // 保证了在一个dom对象上对于相同的事件不会重复注册, 提升了性能
   if (!listenerMap.has(topLevelType)) {
     switch (topLevelType) {
       case TOP_SCROLL: {

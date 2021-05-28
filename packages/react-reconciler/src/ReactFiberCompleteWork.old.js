@@ -228,6 +228,12 @@ if (supportsMutation) {
     workInProgress.updateQueue = (updatePayload: any);
     // If the update payload indicates that there is a change or if there
     // is a new ref we mark this as an update. All the work is done in commitWork.
+    
+    // 如果是<p>curr val: {this.state.text1}</p>有更新，text1从1变为2. 则p的updatePayload=null，p的第二段文本走updateHostText被标记为4-update
+    // 如果是<p>{this.state.text1}</p>有更新，text1从1变为2. 则p的updatePayload=["children", "2"]
+    // 如果是<button onClick={() => {
+    //     this.setState({text1: this.state.text1 + 1})
+    // }}>setState button</button>重新render. 则button的updatePayload=[]，被标记为4-update
     if (updatePayload) {
       // 为workInProgress打上effectTag
       markUpdate(workInProgress);
@@ -804,6 +810,7 @@ function completeWork(
         const oldText = current.memoizedProps;
         // If we have an alternate, that means this is an update and we need
         // to schedule a side-effect to do the updates.
+        // 文本节点的内容是放在props上的，而不是children. updateHostText比较新旧内容字符串，不等则打上effectTag为4-updat
         updateHostText(current, workInProgress, oldText, newText);
       } else {
         if (typeof newText !== 'string') {

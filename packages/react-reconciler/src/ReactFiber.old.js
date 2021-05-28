@@ -123,7 +123,7 @@ function FiberNode(
   this.type = null;
   // 对于rootFiber节点而言，stateNode属性指向对应的fiberRoot节点
   // 对于child fiber节点而言，stateNode属性指向对应的组件实例
-  this.stateNode = null; // 对应的真实DOM节点?
+  this.stateNode = null; // 对于html元素而言，stateNode就是对应的真实DOM节点
 
   // Fiber
   this.return = null; // 父级Fiber 用来指向当前fiber的父fiber

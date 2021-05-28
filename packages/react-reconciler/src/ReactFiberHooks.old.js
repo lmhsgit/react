@@ -560,13 +560,16 @@ function updateWorkInProgressHook(): Hook {
   // the dispatcher used for mounts.
   let nextCurrentHook: null | Hook;
   if (currentHook === null) {
+    // current节点
     const current = currentlyRenderingFiber.alternate;
     if (current !== null) {
+      // 当前fiber不为空，则第一个hook就是其memoizedState
       nextCurrentHook = current.memoizedState;
     } else {
       nextCurrentHook = null;
     }
   } else {
+    // 当前工作hook不为空，则取其next
     nextCurrentHook = currentHook.next;
   }
 
@@ -656,6 +659,7 @@ function updateReducer<S, I, A>(
   initialArg: I,
   init?: I => S,
 ): [S, Dispatch<A>] {
+  // 获取当前hook
   const hook = updateWorkInProgressHook();
   const queue = hook.queue;
   invariant(
@@ -763,9 +767,10 @@ function updateReducer<S, I, A>(
           newState = ((update.eagerState: any): S);
         } else {
           const action = update.action;
-          newState = reducer(newState, action);
+          newState = reducer(newState, action); // 基于上次的newState做reducer
         }
       }
+      // 指向下一个更新(useState触发的dispatch)
       update = update.next;
     } while (update !== null && update !== first);
 
@@ -1111,18 +1116,22 @@ function updateMutableSource<Source, Snapshot>(
 function mountState<S>(
   initialState: (() => S) | S,
 ): [S, Dispatch<BasicStateAction<S>>] {
+  // 创建并返回当前的hook
   const hook = mountWorkInProgressHook();
+  // 赋值初始state
   if (typeof initialState === 'function') {
     // $FlowFixMe: Flow doesn't like mixed types
     initialState = initialState();
   }
   hook.memoizedState = hook.baseState = initialState;
+  // 创建queue
   const queue = (hook.queue = {
     pending: null,
     dispatch: null,
     lastRenderedReducer: basicStateReducer,
     lastRenderedState: (initialState: any),
   });
+  // 创建dispatch
   const dispatch: Dispatch<
     BasicStateAction<S>,
   > = (queue.dispatch = (dispatchAction.bind(
@@ -1641,6 +1650,7 @@ function dispatchAction<S, A>(
     suspenseConfig,
   );
 
+  // 创建update
   const update: Update<S, A> = {
     expirationTime,
     suspenseConfig,
@@ -1654,8 +1664,10 @@ function dispatchAction<S, A>(
     update.priority = getCurrentPriorityLevel();
   }
 
+  // ...将update加入queue.pending
   // Append the update to the end of the list.
   const pending = queue.pending;
+  // 多个update形成环状单向链表
   if (pending === null) {
     // This is the first update. Create a circular list.
     update.next = update;
@@ -1692,11 +1704,13 @@ function dispatchAction<S, A>(
         }
         try {
           const currentState: S = (queue.lastRenderedState: any);
+          // 根据action执行reducer的dispatch，执行结果就是渴望的state
           const eagerState = lastRenderedReducer(currentState, action);
           // Stash the eagerly computed state, and the reducer used to compute
           // it, on the update object. If the reducer hasn't changed by the
           // time we enter the render phase, then the eager state can be used
           // without calling the reducer again.
+          // 将新的state和reducer放入update对象中。
           update.eagerReducer = lastRenderedReducer;
           update.eagerState = eagerState;
           if (is(eagerState, currentState)) {
@@ -1722,6 +1736,7 @@ function dispatchAction<S, A>(
         warnIfNotCurrentlyActingUpdatesInDev(fiber);
       }
     }
+    // 开启调度
     scheduleUpdateOnFiber(fiber, expirationTime);
   }
 

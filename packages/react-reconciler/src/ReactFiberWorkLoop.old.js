@@ -429,6 +429,7 @@ export function scheduleUpdateOnFiber(
   // priority as an argument to that function and this one.
   const priorityLevel = getCurrentPriorityLevel();
 
+  // legacy模式才可能为Sync,concurrent模式下expirationTime不会为Sync
   if (expirationTime === Sync) {
     if (
       // Check if we're inside unbatchedUpdates
@@ -442,17 +443,25 @@ export function scheduleUpdateOnFiber(
       // This is a legacy edge case. The initial mount of a ReactDOM.render-ed
       // root inside of batchedUpdates should be synchronous, but layout updates
       // should be deferred until the end of the batch.
+      // 初次渲染会走这里
       performSyncWorkOnRoot(root);
     } else {
       ensureRootIsScheduled(root);
       schedulePendingInteractions(root, expirationTime);
+      /*
+        合成事件的回调方法中setState时，executionContext=6，不为0
+        promise.then的回调里setState时，executionContext=0
+        这里是进入同步的关键
+      */
       if (executionContext === NoContext) {
         // Flush the synchronous work now, unless we're already working or inside
         // a batch. This is intentionally inside scheduleUpdateOnFiber instead of
         // scheduleCallbackForFiber to preserve the ability to schedule a callback
         // without immediately flushing it. We only do this for user-initiated
         // updates, to preserve historical behavior of legacy mode.
-        flushSyncCallbackQueue();
+        
+        //  这里是进入同步的关键
+        flushSyncCallbackQueue(); //会马上调用performSyncWorkOnRoot，表现上是同步的更新了state
       }
     }
   } else {
@@ -470,6 +479,7 @@ export function scheduleUpdateOnFiber(
     // This is the result of a discrete event. Track the lowest priority
     // discrete update per root so we can flush them early, if needed.
     if (rootsWithPendingDiscreteUpdates === null) {
+      // 合成事件的回调方法中setState时，走这里
       rootsWithPendingDiscreteUpdates = new Map([[root, expirationTime]]);
     } else {
       const lastDiscreteTime = rootsWithPendingDiscreteUpdates.get(root);
